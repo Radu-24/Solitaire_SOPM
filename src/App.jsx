@@ -4,11 +4,11 @@ import {
   generateDeck,
   deal,
   drawFromStock,
-  moveFromWasteToTableau,
   moveStackInTableau,
-  autoMoveToFoundation,
   cloneState,
   checkWin,
+  moveWasteToTableau,
+  autoMoveToFoundation,
 } from "./gameLogic";
 import { saveGame, loadGame } from "./storage";
 import { playMoveSound } from "./sound";
@@ -16,6 +16,7 @@ import { playMoveSound } from "./sound";
 export default function App() {
   const [state, setState] = useState(null);
   const [history, setHistory] = useState([]);
+  const [dragInfo, setDragInfo] = useState(null); // { type: 'tableau'|'waste', fromColIndex?, cardId }
 
   useEffect(() => {
     const saved = loadGame();
@@ -70,47 +71,85 @@ export default function App() {
     });
   }
 
+  // doar stock-ul mai merge pe click
   function handleStockClick() {
     updateStateWithSound((prev) => drawFromStock(prev));
   }
 
-  function handleWasteClick() {
-  updateStateWithSound((prev) => {
-    // 1. Încearcă auto-move în foundation
-    const moved = autoMoveToFoundation(prev, { from: "waste" });
-    if (moved !== prev) return moved;
-
-    // 2. Dacă nu merge în foundation, încearcă fiecare coloană
-    for (let col = 0; col < prev.tableau.length; col++) {
-      const test = moveFromWasteToTableau(prev, col);
-      if (test !== prev) return test;
-    }
-
-    return prev;
-  });
-}
-
-  function handleTableauCardClick(card, colIndex) {
-    updateStateWithSound((prev) => {
-      for (let i = 0; i < prev.tableau.length; i++) {
-        if (i === colIndex) continue;
-        const newS = moveStackInTableau(prev, colIndex, card.id, i);
-        if (newS !== prev) return newS;
-      }
-      return prev;
+  // ---- DRAG & DROP TABLEAU ----
+  function handleTableauDragStart(card, fromColIndex) {
+    if (card.faceDown) return;
+    setDragInfo({
+      type: "tableau",
+      fromColIndex,
+      cardId: card.id,
     });
   }
 
-  function handleTableauCardDoubleClick(card, colIndex) {
+  function handleTableauDrop(toColIndex) {
+    if (!dragInfo || dragInfo.type !== "tableau") return;
+
+    const { fromColIndex, cardId } = dragInfo;
+
+    if (fromColIndex === toColIndex) {
+      setDragInfo(null);
+      return;
+    }
+
     updateStateWithSound((prev) =>
-      autoMoveToFoundation(prev, { from: "tableau", colIndex })
+      moveStackInTableau(prev, fromColIndex, cardId, toColIndex)
     );
+
+    setDragInfo(null);
   }
 
-  function handleFoundationClick(index) {
+  function handleDragEnd() {
+    if (dragInfo) {
+      setDragInfo(null);
+    }
+  }
+
+  // ---- DRAG & DROP WASTE ----
+  function handleWasteDragStart(card) {
+    if (card.faceDown) return;
+
+    setDragInfo({
+      type: "waste",
+      cardId: card.id,
+    });
+  }
+
+  function handleWasteDropOnTableau(toColIndex) {
+    if (!dragInfo || dragInfo.type !== "waste") return;
+
+    const { cardId } = dragInfo;
+
     updateStateWithSound((prev) =>
-      autoMoveToFoundation(prev, { from: "waste" })
+      moveWasteToTableau(prev, cardId, toColIndex)
     );
+
+    setDragInfo(null);
+  }
+
+  // ---- DRAG & DROP CĂTRE FOUNDATION (din waste sau tableau) ----
+  function handleFoundationDrop(foundationIndex) {
+    if (!dragInfo) return;
+
+    if (dragInfo.type === "waste") {
+      updateStateWithSound((prev) =>
+        autoMoveToFoundation(prev, { from: "waste" }, foundationIndex)
+      );
+    } else if (dragInfo.type === "tableau") {
+      updateStateWithSound((prev) =>
+        autoMoveToFoundation(
+          prev,
+          { from: "tableau", colIndex: dragInfo.fromColIndex },
+          foundationIndex
+        )
+      );
+    }
+
+    setDragInfo(null);
   }
 
   return (
@@ -120,12 +159,17 @@ export default function App() {
       stock={stock}
       waste={waste}
       onStockClick={handleStockClick}
-      onWasteClick={handleWasteClick}
-      onTableauCardClick={handleTableauCardClick}
-      onTableauCardDoubleClick={handleTableauCardDoubleClick}
-      onFoundationClick={handleFoundationClick}
       onNewGame={startNewGame}
       onUndo={handleUndo}
+      // drag & drop tableau
+      onTableauDragStart={handleTableauDragStart}
+      onTableauDrop={handleTableauDrop}
+      onDragEnd={handleDragEnd}
+      // drag & drop waste
+      onWasteDragStart={handleWasteDragStart}
+      onWasteDropOnTableau={handleWasteDropOnTableau}
+      // drag & drop spre foundation
+      onFoundationDrop={handleFoundationDrop}
     />
   );
 }

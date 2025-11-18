@@ -1,6 +1,7 @@
 let nextId = 1;
 const valueOrder = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
 const suits = ["♠", "♥", "♦", "♣"];
+const foundationSuits = ["♥", "♦", "♣", "♠"];
 
 export function generateDeck() {
   const deck = [];
@@ -66,10 +67,16 @@ export function canPlaceOnTableau(card, targetPile) {
   );
 }
 
-export function canPlaceOnFoundation(card, pile) {
+// foundationIndex spune ce suit are casa (♥, ♦, ♣, ♠ în ordinea foundationSuits)
+export function canPlaceOnFoundation(card, pile, pileIndex) {
+  const requiredSuit = foundationSuits[pileIndex];
+
+  if (card.suit !== requiredSuit) return false;
+
   if (pile.length === 0) {
     return card.value === "A";
   }
+
   const top = pile[pile.length - 1];
   return (
     card.suit === top.suit &&
@@ -77,7 +84,8 @@ export function canPlaceOnFoundation(card, pile) {
   );
 }
 
-export function autoMoveToFoundation(state, cardLocation) {
+// dacă foundationIndex e null → caută orice foundation valid (folosit doar dacă vrei auto)
+export function autoMoveToFoundation(state, cardLocation, foundationIndex = null) {
   const newState = cloneState(state);
   let card = null;
 
@@ -90,9 +98,14 @@ export function autoMoveToFoundation(state, cardLocation) {
     if (!card || card.faceDown) return state;
   }
 
-  for (let i = 0; i < newState.foundations.length; i++) {
+  const indicesToTry =
+    foundationIndex !== null
+      ? [foundationIndex]
+      : newState.foundations.map((_, i) => i);
+
+  for (let i of indicesToTry) {
     const pile = newState.foundations[i];
-    if (canPlaceOnFoundation(card, pile)) {
+    if (canPlaceOnFoundation(card, pile, i)) {
       if (cardLocation.from === "waste") {
         newState.waste.pop();
       } else {
@@ -107,6 +120,7 @@ export function autoMoveToFoundation(state, cardLocation) {
   return state;
 }
 
+// folosit înainte pe click – poate rămâne
 export function moveFromWasteToTableau(state, colIndex) {
   const newState = cloneState(state);
   const card = newState.waste[newState.waste.length - 1];
@@ -175,4 +189,26 @@ export function cloneState(state) {
     stock: state.stock.map((c) => ({ ...c })),
     waste: state.waste.map((c) => ({ ...c })),
   };
+}
+
+// DnD: WASTE -> TABLEAU
+export function moveWasteToTableau(state, cardId, toColIndex) {
+  const newState = cloneState(state);
+
+  if (newState.waste.length === 0) return state;
+
+  const card = newState.waste[newState.waste.length - 1];
+
+  if (card.id !== cardId) return state;
+
+  const targetPile = newState.tableau[toColIndex];
+
+  if (!canPlaceOnTableau(card, targetPile)) {
+    return state;
+  }
+
+  newState.waste.pop();
+  targetPile.push(card);
+
+  return newState;
 }

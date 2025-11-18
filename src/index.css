@@ -2,80 +2,215 @@
   box-sizing: border-box;
 }
 
+html, body, .board {
+  -webkit-user-select: none; /* Chrome / Safari */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* vechi IE/Edge */
+  user-select: none;         /* standard */
+}
+
+
+/* ---------- FUNDAL ---------- */
+
 body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: radial-gradient(circle at top, #0b3d91, #021526);
+  /* verde curat, fără linie la mijloc */
+  background: #15813a;
   color: #f5f5f5;
 }
 
+/* masă de joc centrată */
 .board {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 16px;
+  padding: 20px 24px 32px;
 }
+
+/* ---------- HEADER ---------- */
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
-.header h1 {
+.title {
   margin: 0;
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
 }
 
-.controls button {
-  margin-left: 8px;
-  padding: 6px 12px;
-  border-radius: 6px;
+.controls {
+  display: flex;
+  gap: 10px;
+}
+
+.control-btn {
+  padding: 7px 18px;
+  border-radius: 999px;
   border: none;
   cursor: pointer;
+  background: linear-gradient(135deg, #ffffff, #dde6ff);
+  color: #222;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
 }
+
+.control-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
+  background: linear-gradient(135deg, #ffffff, #c7d6ff);
+}
+
+/* ---------- ZONA DE SUS ---------- */
 
 .top-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 26px;
 }
 
 .stock-area {
   display: flex;
-  gap: 16px;
+  gap: 18px;
 }
+
+/* sloturile pentru stoc / waste / foundation */
 
 .stock,
 .waste,
 .foundation {
-  width: 90px;
-  height: 130px;
-  border-radius: 10px;
-  border: 2px dashed rgba(255,255,255,0.3);
+  width: 110px;
+  height: 160px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
 }
 
-.placeholder {
-  opacity: 0.5;
+/* ---------- STOCK = TEANC DE CĂRȚI ÎNTOARSE ---------- */
+
+.stock {
+  cursor: pointer;
 }
+
+/* când are cărți: teanc */
+.stock-has-cards {
+  border: none;
+  background: transparent;
+}
+
+.stock-has-cards::before,
+.stock-has-cards::after {
+  content: "";
+  position: absolute;
+  width: 110px;
+  height: 160px;
+  border-radius: 12px;
+  border: 2px solid #00336b;
+  background: radial-gradient(circle at 30% 20%, #1aa5ff, #0051b3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.45);
+}
+
+.stock-has-cards::before {
+  transform: translate(5px, 7px);
+  opacity: 0.7;
+}
+
+.stock-has-cards::after {
+  transform: translate(2px, 3px);
+  opacity: 0.9;
+}
+
+/* cartea de sus din teanc */
+.stock-top-card {
+  position: relative;
+  width: 110px;
+  height: 160px;
+  border-radius: 12px;
+  border: 2px solid #002554;
+  background: radial-gradient(circle at 25% 20%, #1eb8ff, #0050b0);
+  box-shadow: 0 7px 14px rgba(0, 0, 0, 0.7);
+}
+
+/* când nu mai sunt cărți: doar slot, dar click-ul merge în continuare */
+.stock-empty {
+  border: 2px dashed rgba(255, 255, 255, 0.55);
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* ---------- WASTE ---------- */
+
+.waste {
+  width: 140px;
+  border: none;
+  background: transparent;
+  position: relative;
+}
+
+/* fiecare carte din waste */
+.waste-card-slot {
+  position: absolute;
+  top: 0;
+}
+
+/* cărțile de dedesubt: puțin mai închise și ne-dragabile */
+.waste-under {
+  filter: brightness(0.92);
+  pointer-events: none;
+}
+
+/* ---------- FOUNDATION-URI ---------- */
 
 .foundations {
   display: flex;
-  gap: 16px;
+  gap: 18px;
 }
+
+.foundation {
+  border-radius: 12px;
+  border: 2px solid rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* iconițe faint pentru suit-uri */
+.placeholder-suit {
+  font-size: 2.6rem;
+  opacity: 0.4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.placeholder-suit-0,
+.placeholder-suit-1 {
+  color: #ff6b6b; /* roșu pentru ♥ și ♦ */
+}
+
+.placeholder-suit-2,
+.placeholder-suit-3 {
+  color: #f5f7ff; /* albicios pentru ♣ și ♠ */
+}
+
+/* ---------- TABLEAU (coloanele de jos) ---------- */
 
 .tableau {
   display: flex;
-  gap: 16px;
+  gap: 18px;
   position: relative;
-  min-height: 300px;
+  min-height: 340px;
 }
 
 .column {
-  width: 90px;
+  width: 110px;
   position: relative;
 }
 
@@ -84,32 +219,37 @@ body {
   left: 0;
 }
 
+/* ---------- CĂRȚI ---------- */
+
 .card {
-  width: 90px;
-  height: 130px;
-  border-radius: 10px;
-  border: 2px solid #222;
+  width: 110px;
+  height: 160px;
+  border-radius: 12px;
+  border: 2px solid #111;
   background: #ffffff;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 6px;
+  padding: 7px;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
 }
 
 .card-front:hover {
   transform: translateY(-4px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+  box-shadow: 0 7px 14px rgba(0, 0, 0, 0.45);
 }
 
+/* spatele cărților – inspirat de Google, dar custom */
 .card-back {
-  background: linear-gradient(135deg, #0044aa, #001a55);
+  background: radial-gradient(circle at 30% 20%, #1eb8ff, #0050b0);
+  border-color: #002554;
 }
 
+/* colțuri + simbol central */
 .corner {
-  font-size: 14px;
-  font-weight: bold;
+  font-size: 16px;
+  font-weight: 700;
 }
 
 .corner.top {
@@ -122,6 +262,24 @@ body {
 }
 
 .symbol {
-  font-size: 32px;
+  font-size: 40px;
   text-align: center;
+}
+
+/* ---------- STĂRI DnD ---------- */
+
+.card.dragging {
+  opacity: 0.95;
+  transform: translateY(-10px) scale(1.04);
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.75);
+}
+
+.column.drag-over {
+  outline: 2px dashed rgba(255, 255, 255, 0.7);
+  outline-offset: 4px;
+}
+
+/* placeholder generic (dacă îl mai folosești) */
+.placeholder {
+  opacity: 0.6;
 }
