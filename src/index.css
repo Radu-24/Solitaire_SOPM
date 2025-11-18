@@ -1,0 +1,127 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #0b3d91, #021526);
+  color: #f5f5f5;
+}
+
+.board {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.header h1 {
+  margin: 0;
+}
+
+.controls button {
+  margin-left: 8px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.top-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.stock-area {
+  display: flex;
+  gap: 16px;
+}
+
+.stock,
+.waste,
+.foundation {
+  width: 90px;
+  height: 130px;
+  border-radius: 10px;
+  border: 2px dashed rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.placeholder {
+  opacity: 0.5;
+}
+
+.foundations {
+  display: flex;
+  gap: 16px;
+}
+
+.tableau {
+  display: flex;
+  gap: 16px;
+  position: relative;
+  min-height: 300px;
+}
+
+.column {
+  width: 90px;
+  position: relative;
+}
+
+.card-wrapper {
+  position: absolute;
+  left: 0;
+}
+
+.card {
+  width: 90px;
+  height: 130px;
+  border-radius: 10px;
+  border: 2px solid #222;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 6px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-front:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+}
+
+.card-back {
+  background: linear-gradient(135deg, #0044aa, #001a55);
+}
+
+.corner {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.corner.top {
+  align-self: flex-start;
+}
+
+.corner.bottom {
+  align-self: flex-end;
+  transform: rotate(180deg);
+}
+
+.symbol {
+  font-size: 32px;
+  text-align: center;
+}
