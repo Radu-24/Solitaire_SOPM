@@ -29,11 +29,15 @@ export default function Board({
           <div className="stock" onClick={onStockClick}>
             {stock.length === 0 ? <span className="placeholder">∅</span> : <span />}
           </div>
-          <div className="waste" onClick={onWasteClick}>
-            {waste.length > 0 && (
-              <Card card={waste[waste.length - 1]} />
-            )}
-          </div>
+          <div className="waste">
+  {waste.length > 0 && (
+    <Card 
+      card={waste[waste.length - 1]} 
+      onClick={() => onWasteClick()} 
+      onDoubleClick={() => onWasteClick()}
+    />
+  )}
+</div>
         </div>
 
         <div className="foundations">

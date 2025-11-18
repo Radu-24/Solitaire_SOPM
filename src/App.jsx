@@ -75,10 +75,20 @@ export default function App() {
   }
 
   function handleWasteClick() {
-    updateStateWithSound((prev) =>
-      autoMoveToFoundation(prev, { from: "waste" })
-    );
-  }
+  updateStateWithSound((prev) => {
+    // 1. Încearcă auto-move în foundation
+    const moved = autoMoveToFoundation(prev, { from: "waste" });
+    if (moved !== prev) return moved;
+
+    // 2. Dacă nu merge în foundation, încearcă fiecare coloană
+    for (let col = 0; col < prev.tableau.length; col++) {
+      const test = moveFromWasteToTableau(prev, col);
+      if (test !== prev) return test;
+    }
+
+    return prev;
+  });
+}
 
   function handleTableauCardClick(card, colIndex) {
     updateStateWithSound((prev) => {
