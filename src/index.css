@@ -283,3 +283,119 @@ body {
 .placeholder {
   opacity: 0.6;
 }
+
+/* ---------- HOME PAGE ---------- */
+
+.home-page {
+  min-height: 100vh;
+  background: #15813a; /* aceeași masă verde */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  box-sizing: border-box;
+}
+
+.home-inner {
+  max-width: 520px;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 20px;
+  padding: 24px 24px 26px;
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
+  color: #f8fff3;
+}
+
+.home-logo {
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  font-size: 11px;
+  opacity: 0.85;
+  margin-bottom: 10px;
+}
+
+.home-title {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.1;
+}
+
+.home-subtitle {
+  margin: 6px 0 20px;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.home-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.home-btn {
+  flex: 1 1 120px;
+  border-radius: 999px;
+  border: none;
+  padding: 11px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    transform 0.12s ease-out,
+    box-shadow 0.12s ease-out,
+    background 0.15s ease-out,
+    color 0.15s ease-out,
+    border-color 0.15s ease-out;
+}
+
+.home-btn-primary {
+  background: linear-gradient(135deg, #33ff99, #2dd6c0);
+  color: #042012;
+  box-shadow: 0 10px 22px rgba(27, 255, 155, 0.55);
+}
+
+.home-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(27, 255, 155, 0.7);
+}
+
+.home-btn-secondary {
+  background: rgba(5, 55, 24, 0.95);
+  color: #eaffeb;
+  border: 1px solid rgba(144, 255, 194, 0.6);
+}
+
+.home-btn-secondary:hover {
+  transform: translateY(-1px);
+  background: rgba(8, 80, 36, 0.98);
+}
+
+.home-btn-ghost {
+  background: transparent;
+  color: #eaffeb;
+  border: 1px dashed rgba(223, 255, 233, 0.6);
+}
+
+.home-btn-ghost:hover {
+  transform: translateY(-1px);
+  border-style: solid;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+@media (max-width: 600px) {
+  .home-inner {
+    padding: 18px 16px 20px;
+  }
+
+  .home-title {
+    font-size: 24px;
+  }
+
+  .home-buttons {
+    flex-direction: column;
+  }
+}

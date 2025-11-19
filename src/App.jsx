@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Board from "./components/Board";
+import HomePage from "./HomePage";
 import {
   generateDeck,
   deal,
@@ -18,10 +19,16 @@ export default function App() {
   const [history, setHistory] = useState([]);
   const [dragInfo, setDragInfo] = useState(null); // { type: 'tableau'|'waste', fromColIndex?, cardId }
 
+  // nou: controlăm dacă se vede home page
+  const [showHome, setShowHome] = useState(true);
+  // nou: știm dacă există un joc salvat ca să afișăm Continue
+  const [hasSavedGame, setHasSavedGame] = useState(false);
+
   useEffect(() => {
     const saved = loadGame();
     if (saved) {
       setState(saved);
+      setHasSavedGame(true);
     } else {
       startNewGame();
     }
@@ -41,6 +48,7 @@ export default function App() {
     const newState = deal(deck);
     setState(newState);
     setHistory([]);
+    setHasSavedGame(true); // există mereu un joc curent ce poate fi „Continue”
   }
 
   function pushHistory(prev) {
@@ -55,6 +63,39 @@ export default function App() {
       return h.slice(0, -1);
     });
   }
+
+  // ---- HANDLERE HOME PAGE ----
+  function handleHomeNewGame() {
+    startNewGame();   // folosește exact logica ta
+    setShowHome(false);
+  }
+
+  function handleHomeContinue() {
+    // dacă nu ai nimic salvat (teoretic nu se întâmplă), pornește un joc nou
+    if (!hasSavedGame) {
+      startNewGame();
+    }
+    setShowHome(false);
+  }
+
+  function handleHomeHistory() {
+    // deocamdată doar placeholder, ca să nu stricăm nimic în gameLogic
+    alert("History / CSV îl facem după ce stabilim structura datelor.");
+  }
+
+  // dacă suntem pe Home Page, nu mai randăm Board-ul
+  if (showHome) {
+    return (
+      <HomePage
+        onNewGame={handleHomeNewGame}
+        onContinue={handleHomeContinue}
+        onShowHistory={handleHomeHistory}
+        canContinue={hasSavedGame}
+      />
+    );
+  }
+
+  // de aici în jos e codul tău original, aproape nemodificat
 
   if (!state) return null;
 
